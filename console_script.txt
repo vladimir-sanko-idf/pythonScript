@@ -1,0 +1,95 @@
+CREATE TABLE slkz_mysql_master.qiwi_scoring_info_archive
+(
+    `id` Int64,
+    `actualDate` Nullable(DateTime),
+    `averageSum` Nullable(Int32),
+    `firstPayDate` Nullable(DateTime),
+    `firstPaymentRegion` Nullable(String),
+    `lastPayDate` Nullable(DateTime),
+    `lastPaymentRegion` Nullable(String),
+    `lifePeriod` Nullable(Int32),
+    `maxDifferenceInDays` Nullable(Int32),
+    `maxPayment1Month` Nullable(Int32),
+    `maxPayment3Month` Nullable(Int32),
+    `maxPayment6Month` Nullable(Int32),
+    `maxPaymentRegion` Nullable(String),
+    `maxgapdays` Nullable(Int32),
+    `payTime` Nullable(Int32),
+    `payments1MonthCount` Nullable(Int32),
+    `payments1MonthSum` Nullable(Int32),
+    `payments3MonthCount` Nullable(Int32),
+    `payments3MonthSum` Nullable(Int32),
+    `payments6MonthCount` Nullable(Int32),
+    `payments6MonthSum` Nullable(Int32),
+    `paymentsForMaxPaymentsCountProvider` Nullable(Int32),
+    `phoneNumber` Nullable(Int64),
+    `providerWithMaximumPaymentsCount` Nullable(String),
+    `providerWithMaximumPaymentsSum` Nullable(String),
+    `regionMaxpayscount` Nullable(Int32),
+    `regionPercent` Nullable(Int32),
+    `totalMaxPayment` Nullable(Int32),
+    `totalPaymentsCount` Nullable(Int32),
+    `totalPaymentsSum` Nullable(Int32),
+    `startdate` Nullable(DateTime),
+    `type` Nullable(String),
+    `description` Nullable(String),
+    `ext_id` Nullable(String),
+    `qiwi_scoring_id` Int64,
+    `result` Nullable(String)
+,`triggeredTime` DateTime
+)
+ENGINE = MergeTree ORDER BY id
+TTL triggeredTime + INTERVAL 2 DAY
+partition by triggeredTime
+SETTINGS index_granularity = 8192;
+
+insert into slkz_mysql_master.qiwi_scoring_info_archive
+select id,
+actualDate,
+averageSum,
+firstPayDate,
+firstPaymentRegion,
+lastPayDate,
+lastPaymentRegion,
+lifePeriod,
+maxDifferenceInDays,
+maxPayment1Month,
+maxPayment3Month,
+maxPayment6Month,
+maxPaymentRegion,
+maxgapdays,
+payTime,
+payments1MonthCount,
+payments1MonthSum,
+payments3MonthCount,
+payments3MonthSum,
+payments6MonthCount,
+payments6MonthSum,
+paymentsForMaxPaymentsCountProvider,
+phoneNumber,
+providerWithMaximumPaymentsCount,
+providerWithMaximumPaymentsSum,
+regionMaxpayscount,
+regionPercent,
+totalMaxPayment,
+totalPaymentsCount,
+totalPaymentsSum,
+startdate,
+type,
+description,
+ext_id,
+qiwi_scoring_id,
+result,
+{triggeredTime}
+from mysql('internal.risk.slave.solva.kz:3306', 'solva_kz', 'qiwi_scoring_info', 'warehouse',
+'RrLnchhMTJd6m7OTPkUX');
+insert into slkz_master.last_mysql_scheduled_dump_table
+values (' qiwi_scoring_info.sql', '{triggeredTime}', 0);
+system reload dictionary slkz_mysql_master.last_mysql_scheduled_dump_dictionary;
+
+drop view if exists slkz_mysql_master.qiwi_scoring_info;
+create view slkz_mysql_master.qiwi_scoring_info as
+select t1.*
+from slkz_mysql_master.qiwi_scoring_info_archive t1
+where t1.triggeredTime = dictGet('slkz_master.last_mysql_scheduled_dump_dictionary', 'last_succeed_time',
+ tuple('qiwi_scoring_info.sql'));

@@ -1,0 +1,47 @@
+qiwi_scoring_info
+slkz_mysql_master
+2 DAY
+id
+slkz_master
+CREATE TABLE risk_db.test_temp
+(
+    `id` Int64,
+    `actualDate` Nullable(DateTime),
+    `averageSum` Nullable(Int32),
+    `firstPayDate` Nullable(DateTime),
+    `firstPaymentRegion` Nullable(String),
+    `lastPayDate` Nullable(DateTime),
+    `lastPaymentRegion` Nullable(String),
+    `lifePeriod` Nullable(Int32),
+    `maxDifferenceInDays` Nullable(Int32),
+    `maxPayment1Month` Nullable(Int32),
+    `maxPayment3Month` Nullable(Int32),
+    `maxPayment6Month` Nullable(Int32),
+    `maxPaymentRegion` Nullable(String),
+    `maxgapdays` Nullable(Int32),
+    `payTime` Nullable(Int32),
+    `payments1MonthCount` Nullable(Int32),
+    `payments1MonthSum` Nullable(Int32),
+    `payments3MonthCount` Nullable(Int32),
+    `payments3MonthSum` Nullable(Int32),
+    `payments6MonthCount` Nullable(Int32),
+    `payments6MonthSum` Nullable(Int32),
+    `paymentsForMaxPaymentsCountProvider` Nullable(Int32),
+    `phoneNumber` Nullable(Int64),
+    `providerWithMaximumPaymentsCount` Nullable(String),
+    `providerWithMaximumPaymentsSum` Nullable(String),
+    `regionMaxpayscount` Nullable(Int32),
+    `regionPercent` Nullable(Int32),
+    `totalMaxPayment` Nullable(Int32),
+    `totalPaymentsCount` Nullable(Int32),
+    `totalPaymentsSum` Nullable(Int32),
+    `startdate` Nullable(DateTime),
+    `type` Nullable(String),
+    `description` Nullable(String),
+    `ext_id` Nullable(String),
+    `qiwi_scoring_id` Int64,
+    `result` Nullable(String)
+)
+ENGINE = MergeTree
+ORDER BY assumeNotNull(id)
+SETTINGS index_granularity = 8192;
